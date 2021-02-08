@@ -7,22 +7,26 @@ import {
   Param,
   Delete,
   Inject,
+  Logger,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { CreateUserDTO } from './dto/create-user.dto';
+import { UpdateUserDTO } from './dto/update-user.dto';
 import { IUserService } from './interfaces/IUserService';
 
 @Controller('users')
 export class UsersController {
+  private readonly logger = new Logger(UsersController.name);
+
   constructor(
     @Inject('IUserService') private readonly usersService: IUserService,
   ) {}
 
   @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async create(@Body() CreateUserDTO: CreateUserDTO) {
+    this.logger.log(
+      `Someone is creating a user: ${JSON.stringify(CreateUserDTO)}`,
+    );
+    return this.usersService.create(CreateUserDTO);
   }
 
   @Get()
@@ -36,8 +40,8 @@ export class UsersController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  update(@Param('id') id: string, @Body() UpdateUserDTO: UpdateUserDTO) {
+    return this.usersService.update(id, UpdateUserDTO);
   }
 
   @Delete(':id')

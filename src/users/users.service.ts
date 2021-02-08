@@ -1,19 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { CreateUserDTO } from './dto/create-user.dto';
+import { UpdateUserDTO } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { v4 as uuid } from 'uuid';
 import { IUserService } from './interfaces/IUserService';
 
 @Injectable()
 export class UsersService implements IUserService {
+  private readonly logger = new Logger(UsersService.name);
+
   private users: Array<User> = [];
 
-  create(createUserDto: CreateUserDto) {
+  create(CreateUserDTO: CreateUserDTO) {
     const user = new User(
       uuid(),
-      createUserDto.username,
-      createUserDto.password,
+      CreateUserDTO.username,
+      CreateUserDTO.password,
     );
     this.users.push(user);
     return user;
@@ -25,15 +27,17 @@ export class UsersService implements IUserService {
 
   findOne(id: string) {
     const user = this.users.find((user) => user.id === id);
-    if (!user)
+    if (!user) {
+      this.logger.error(`Failed to find a customer with the id: "${id}"`);
       throw new NotFoundException(`User with id="${id}" does not exist`);
+    }
     return user;
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
+  update(id: string, UpdateUserDTO: UpdateUserDTO) {
     const user = this.findOne(id);
-    user.username = updateUserDto.username;
-    user.password = updateUserDto.password;
+    user.username = UpdateUserDTO.username;
+    user.password = UpdateUserDTO.password;
     return user;
   }
 
@@ -43,3 +47,10 @@ export class UsersService implements IUserService {
     return id;
   }
 }
+
+// TODO: read about logging
+// TODO: integrate winston
+// TODO: add more logs
+// TODO: add swagger
+// TODO: read about: middlewar, guards and interceptors
+// TODO: add postman collection
