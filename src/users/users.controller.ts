@@ -8,7 +8,11 @@ import {
   Delete,
   Inject,
   Logger,
+  UseInterceptors,
+  CacheInterceptor,
+  CacheTTL,
 } from '@nestjs/common';
+import { ClearCacheInterceptor } from 'src/cache/ClearCacheInterceptor';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { IUsersService } from './interfaces/IUserService';
@@ -22,6 +26,7 @@ export class UsersController {
   ) {}
 
   @Post()
+  @UseInterceptors(ClearCacheInterceptor)
   async create(@Body() CreateUserDTO: CreateUserDTO) {
     this.logger.log(
       `Someone is creating a user: ${JSON.stringify(CreateUserDTO)}`,
@@ -30,6 +35,7 @@ export class UsersController {
   }
 
   @Get()
+  @CacheTTL(100)
   findAll() {
     return this.usersService.findAll();
   }
@@ -40,11 +46,13 @@ export class UsersController {
   }
 
   @Put(':id')
+  @UseInterceptors(ClearCacheInterceptor)
   update(@Param('id') id: string, @Body() UpdateUserDTO: UpdateUserDTO) {
     return this.usersService.update(id, UpdateUserDTO);
   }
 
   @Delete(':id')
+  @UseInterceptors(ClearCacheInterceptor)
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
   }
