@@ -11,14 +11,14 @@ import {
 } from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
-import { IUserService } from './interfaces/IUserService';
+import { IUsersService } from './interfaces/IUserService';
 
 @Controller('users')
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
 
   constructor(
-    @Inject('IUserService') private readonly usersService: IUserService,
+    @Inject('IUserService') private readonly usersService: IUsersService,
   ) {}
 
   @Post()

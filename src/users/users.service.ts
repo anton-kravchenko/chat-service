@@ -1,52 +1,69 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
-import { v4 as uuid } from 'uuid';
-import { IUserService } from './interfaces/IUserService';
+import { InjectModel } from '@nestjs/mongoose';
+import { User, UserDocument } from './schemas/user.schema';
+import { Model } from 'mongoose';
+import { IUsersService } from './interfaces/IUserService';
 
 @Injectable()
-export class UsersService implements IUserService {
+export class UsersService implements IUsersService {
   private readonly logger = new Logger(UsersService.name);
 
   private users: Array<User> = [];
 
-  create(CreateUserDTO: CreateUserDTO) {
-    const user = new User(
-      uuid(),
-      CreateUserDTO.username,
-      CreateUserDTO.password,
-    );
-    this.users.push(user);
-    return user;
+  public constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+  ) {}
+
+  async create(createUserDTO: CreateUserDTO) {
+    try {
+      const user = new this.userModel(createUserDTO);
+      return user.save();
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
   }
 
-  findAll() {
-    return this.users;
+  async findAll() {
+    return this.userModel.find();
   }
 
-  findOne(id: string) {
-    const user = this.users.find((user) => user.id === id);
+  async findOne(id: string) {
+    const user = this.userModel.findById(id);
+
     if (!user) {
-      this.logger.error(`Failed to find a customer with the id: "${id}"`);
+      this.logger.error(`Failed to find a user with the id: "${id}"`);
       throw new NotFoundException(`User with id="${id}" does not exist`);
     }
     return user;
   }
 
-  update(id: string, UpdateUserDTO: UpdateUserDTO) {
-    const user = this.findOne(id);
-    user.username = UpdateUserDTO.username;
-    user.password = UpdateUserDTO.password;
-    return user;
+  async update(id: string, updateUserDTO: UpdateUserDTO) {
+    const user = await this.findOne(id);
+
+    user.username = updateUserDTO.username ?? user.username;
+    user.email = updateUserDTO.email ?? user.email;
+    return await user.save();
   }
 
-  remove(id: string) {
-    const user = this.findOne(id);
-    this.users = this.users.filter((u) => u !== user);
+  async remove(id: string) {
+    const user = await this.findOne(id);
+    user.remove();
     return id;
   }
 }
+
+// Get IP address of container
+// -> docker inspect -f "{{ .NetworkSettings.IPAddress }}" 7266f05cc15c
+
+// Run mongo and bind host and port
+// -> docker run -p 127.0.0.1:27017:27017 mongo
 
 // TODO: read about logging
 // TODO: integrate winston
@@ -54,3 +71,5 @@ export class UsersService implements IUserService {
 // TODO: add swagger
 // TODO: read about: middlewar, guards and interceptors
 // TODO: add postman collection
+// TODO: integrate with Mongo
+// TODO: implement CI via GH actions
