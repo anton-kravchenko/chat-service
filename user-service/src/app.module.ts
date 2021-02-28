@@ -10,9 +10,7 @@ import { UsersModule } from './users/users.module';
   imports: [
     UsersModule,
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(
-      `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/users`,
-    ),
+    MongooseModule.forRoot(process.env.DATABASE_URL),
     RedisModule.register({
       host: process.env.REDIS_HOST,
       port: +process.env.REDIS_PORT,
