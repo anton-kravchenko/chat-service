@@ -64,7 +64,6 @@ export class UsersService implements IUsersService {
 
 // Run mongo and bind host and port
 // -> docker run -p 127.0.0.1:27017:27017 mongo
-
 // TODO: read about logging
 // TODO: integrate winston
 // TODO: add more logs
