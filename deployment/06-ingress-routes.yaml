@@ -1,0 +1,52 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: static-files
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+
+  - match: PathPrefix(`/static`)
+    kind: Rule
+    services:
+    - name: client-app
+      port: 80
+
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: main-route
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Path(`/`)
+    kind: Rule
+    services:
+    - name: client-app
+      port: 80
+
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: chat-route
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: PathPrefix(`/socket.io`, `/meta`)
+    kind: Rule
+    services:
+    - name: chat-service
+      port: 3001
+      sticky:
+        cookie:
+          name: heyy
