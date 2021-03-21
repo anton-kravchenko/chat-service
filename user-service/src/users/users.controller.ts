@@ -8,9 +8,9 @@ import {
   Delete,
   Inject,
   Logger,
+  CacheTTL,
   UseInterceptors,
   CacheInterceptor,
-  CacheTTL,
 } from '@nestjs/common';
 import { ClearCacheInterceptor } from 'src/cache/ClearCacheInterceptor';
 import { CreateUserDTO } from './dto/create-user.dto';
@@ -28,32 +28,36 @@ export class UsersController {
   @Post()
   @UseInterceptors(ClearCacheInterceptor)
   async create(@Body() CreateUserDTO: CreateUserDTO) {
-    this.logger.log(
-      `Someone is creating a user: ${JSON.stringify(CreateUserDTO)}`,
-    );
+    this.logger.log(`Creating a user: ${JSON.stringify(CreateUserDTO)}`);
     return this.usersService.create(CreateUserDTO);
   }
 
   @Get()
   @CacheTTL(100)
+  @UseInterceptors(CacheInterceptor)
   findAll() {
+    this.logger.log(`Fetching all users`);
     return this.usersService.findAll();
   }
 
   @Get(':id')
+  @UseInterceptors(CacheInterceptor)
   findOne(@Param('id') id: string) {
+    this.logger.log(`Searching for a user with "${id}" id`);
     return this.usersService.findOne(id);
   }
 
   @Put(':id')
   @UseInterceptors(ClearCacheInterceptor)
   update(@Param('id') id: string, @Body() UpdateUserDTO: UpdateUserDTO) {
+    this.logger.log(`Updating user with "${id}" id`);
     return this.usersService.update(id, UpdateUserDTO);
   }
 
   @Delete(':id')
   @UseInterceptors(ClearCacheInterceptor)
   remove(@Param('id') id: string) {
+    this.logger.log(`Deleting user with "${id}" id`);
     return this.usersService.remove(id);
   }
 }

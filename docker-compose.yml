@@ -1,6 +1,5 @@
 version: '3.3'
 services:
-
   user-api:
     container_name: nest-user-service
     restart: always
@@ -17,7 +16,7 @@ services:
       - REDIS_HOST=redis
 
   chat:
-    container_name: chat-service
+    container_name: nest-chat-service
     restart: always
     build: chat-service
     ports:
@@ -34,7 +33,7 @@ services:
     ports:
       - '8080:80'
     environment:
-      - API_HOST=chat-service
+      - API_HOST=nest-chat-service
       - API_PORT=3001
     links:
       - chat

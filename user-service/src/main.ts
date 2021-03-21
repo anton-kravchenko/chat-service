@@ -5,18 +5,16 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    cors: true,
+  });
   const port = process.env.PORT;
 
   const swaggerOptions = new DocumentBuilder()
     .setTitle('Chat service')
     .setDescription('CRUD API for user entity')
     .setVersion(process.env.VERSION_TAG)
-    .addServer(
-      process.env.ENV === 'local'
-        ? `http://localhost:${port}`
-        : `<I'm running somewhere in the cloud>`,
-    )
+    .addTag('users')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerOptions);

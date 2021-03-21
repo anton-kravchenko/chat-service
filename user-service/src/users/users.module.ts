@@ -23,7 +23,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
   controllers: [UsersController],
   providers: [
     { provide: 'IUserService', useClass: UsersService },
-    { provide: APP_INTERCEPTOR, useClass: CacheInterceptor },
+    // { provide: APP_INTERCEPTOR, useClass: CacheInterceptor },
   ],
 })
 export class UsersModule {}
