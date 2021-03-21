@@ -1,3 +1,5 @@
+import { ClearCacheInterceptor } from './../cache/ClearCacheInterceptor';
+import { IUsersService } from './interfaces/IUserService';
 import {
   Controller,
   Get,
@@ -8,56 +10,56 @@ import {
   Delete,
   Inject,
   Logger,
-  CacheTTL,
   UseInterceptors,
-  CacheInterceptor,
+  CacheTTL,
 } from '@nestjs/common';
-import { ClearCacheInterceptor } from 'src/cache/ClearCacheInterceptor';
+
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
-import { IUsersService } from './interfaces/IUserService';
+import { RedisService } from 'nestjs-redis';
 
 @Controller('users')
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
 
   constructor(
-    @Inject('IUserService') private readonly usersService: IUsersService,
-  ) {}
+    @Inject('IUsersService') private readonly usersService: IUsersService,
+    redisService: RedisService,
+  ) {
+    redisService.getClient().set('hello', 'world');
+  }
 
   @Post()
   @UseInterceptors(ClearCacheInterceptor)
-  async create(@Body() CreateUserDTO: CreateUserDTO) {
-    this.logger.log(`Creating a user: ${JSON.stringify(CreateUserDTO)}`);
-    return this.usersService.create(CreateUserDTO);
+  create(@Body() createUserDto: CreateUserDTO) {
+    this.logger.log(`Creating a user ${JSON.stringify(createUserDto)}`);
+    return this.usersService.create(createUserDto);
   }
 
   @Get()
-  @CacheTTL(100)
-  @UseInterceptors(CacheInterceptor)
-  findAll() {
-    this.logger.log(`Fetching all users`);
+  @CacheTTL(10)
+  async findAll() {
+    this.logger.log(`Loading all users`);
     return this.usersService.findAll();
   }
 
   @Get(':id')
-  @UseInterceptors(CacheInterceptor)
   findOne(@Param('id') id: string) {
-    this.logger.log(`Searching for a user with "${id}" id`);
+    this.logger.log(`Searching user by id "${id}"`);
     return this.usersService.findOne(id);
   }
 
   @Put(':id')
-  @UseInterceptors(ClearCacheInterceptor)
-  update(@Param('id') id: string, @Body() UpdateUserDTO: UpdateUserDTO) {
-    this.logger.log(`Updating user with "${id}" id`);
-    return this.usersService.update(id, UpdateUserDTO);
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDTO) {
+    this.logger.log(
+      `Updating user by id "${id}": ${JSON.stringify(updateUserDto)}`,
+    );
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
-  @UseInterceptors(ClearCacheInterceptor)
   remove(@Param('id') id: string) {
-    this.logger.log(`Deleting user with "${id}" id`);
+    this.logger.log(`Deleting user by id "${id}"`);
     return this.usersService.remove(id);
   }
 }
