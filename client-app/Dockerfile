@@ -4,18 +4,18 @@ FROM mhart/alpine-node:14 as build-stage
 # Create app directory
 WORKDIR /usr/src/app
 
-# A wildcard is used to ensure both package.json 
+# A wildcard is used to ensure both package.json
 # AND package-lock.json are copied
 COPY package*.json ./
 
 # Install app dependencies
-RUN yarn
+RUN npm ci
 
 # Bundle app source
 COPY . .
 
 # Build the app
-RUN yarn build
+RUN npm run build
 
 # Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
 FROM nginx:1.19-alpine as base-stage
