@@ -23,7 +23,7 @@ spec:
             - name: COOKIE_DOMAIN
               value: "127.0.0.1"
             - name: APP_URL
-              value: "http://127.0.0.1:63713/"
+              value: "http://127.0.0.1:8000/"
             - name: CLIENT_ID
               value: "---"
             - name: CLIENT_SECRET
