@@ -67,7 +67,7 @@ spec:
     - web
   routes:
   # - match: Host(`auth.chat-nwsdrkm.ml`)
-  - match: Path(`/callback`)
+  - match: PathPrefix(`/callback`)
     kind: Rule
     services:
     - name: auth-middleware
