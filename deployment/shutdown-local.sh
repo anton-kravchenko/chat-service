@@ -9,6 +9,7 @@ kubectl delete -f 03-user-service.yaml
 kubectl delete -f 04-traefik-rbac.yaml
 kubectl delete -f 05-traefik-deployment.yaml
 kubectl delete -f 06-ingress-routes.yaml
+kubectl delete -f 08-auth-middleware.yaml
 
 kubectl delete --all pods -n kafka
 kubectl delete --all jobs -n kafka

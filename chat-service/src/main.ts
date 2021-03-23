@@ -15,6 +15,7 @@ bootstrap();
 // -> docker run -p 127.0.0.1:27017:27017 mongo
 
 // CHAT:
+  - wait for mongo and redis before deploying user-service
   - add active room
   - store users in redis
   - fix issue with inactive users

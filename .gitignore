@@ -58,3 +58,4 @@ lerna-debug.log*
 *.launch
 .settings/
 *.sublime-workspace
+cli_commands.txt

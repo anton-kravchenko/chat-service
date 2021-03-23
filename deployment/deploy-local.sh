@@ -10,3 +10,5 @@ kubectl apply -f 03-user-service.yaml
 kubectl apply -f 04-traefik-rbac.yaml
 kubectl apply -f 05-traefik-deployment.yaml
 kubectl apply -f 06-ingress-routes.yaml
+
+kubectl apply -f 08-auth-middleware.yaml

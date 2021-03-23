@@ -6,10 +6,8 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { interval } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Server, Socket } from 'socket.io';
-import { random as randomStarWarsName } from 'starwars-names';
+import { getGithubNicknameFromCookie } from './utils';
 
 @WebSocketGateway({ namespace: 'chat' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -18,8 +16,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
   handleConnection(client: Socket): void {
+    const nickname = getGithubNicknameFromCookie(client.handshake.headers.cookie);
+
     const { id: clientId } = client;
-    const nickname = randomStarWarsName();
 
     this.clientIdToNicknameMapping.set(clientId, nickname);
     this.logger.log(`${nickname} has connected`);
@@ -28,10 +27,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       msg: `Welcome to the chat, ${nickname}`,
       currUserId: nickname,
     });
-    client.emit(
-      'activeUsers',
-      Array.from(this.clientIdToNicknameMapping.values()),
-    );
+    client.emit('activeUsers', Array.from(this.clientIdToNicknameMapping.values()));
 
     client.broadcast.emit('message', {
       msg: `${nickname} has connected to the chat.`,
