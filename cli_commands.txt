@@ -10,3 +10,27 @@ brew services start redis
 
 k get pods
 k get svc
+minikube delete
+
+
+###
+client id     - 42be6a173dc52c0af0bf
+client secret - 7ba7bae6e988ca3002806faac8513a364e189380
+
+redirect to GH
+https://github.com/login/oauth/authorize?scope=user:email&client_id=42be6a173dc52c0af0bf
+
+export CLIENT_ID=42be6a173dc52c0af0bf;
+export CLIENT_SECRET=7ba7bae6e988ca3002806faac8513a364e189380;
+export COOKIE_DOMAIN=chat-nwsdrkm.ml:54177;
+export APP_URL=http://chat-nwsdrkm.ml:54177/;
+
+node index.js
+
+
+
+### QUESTION
+ - what to do with secrets
+ - how to implement logout ? cookie expires but socket continues working
+ - mac - make traefik type "LoadBalancer" for accessing on host machine
+

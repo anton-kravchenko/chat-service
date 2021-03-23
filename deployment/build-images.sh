@@ -10,4 +10,7 @@ docker build -f ../user-service/Dockerfile ../user-service/ -t kravchenkoanton/u
 echo "\n -> Building client-app...\n"
 docker build -f ../client-app/Dockerfile ../client-app/ -t kravchenkoanton/client-app:latest
 
+echo "\n -> Building github-auth-middleware...\n"
+docker build -f ../github-auth-middleware/Dockerfile ../github-auth-middleware/ -t kravchenkoanton/github-auth-middleware:latest
+
 echo "\n -> Done!\n"

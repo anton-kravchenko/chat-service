@@ -1,21 +1,27 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: static-files
+  name: chat-svc-route
   namespace: default
 spec:
   entryPoints:
     - web
+  #   - websecure
+  # tls:
+  #   secretName: localhost-cert
   routes:
-
-  - match: PathPrefix(`/static`)
+  - match: PathPrefix(`/socket.io`, `/meta`)
     kind: Rule
+    priority: 10
+    middlewares:
+    - name: default-sso@kubernetescrd
     services:
-    - name: client-app
-      port: 80
-
+    - name: chat-service
+      port: 3001
+      sticky:
+        cookie:
+          name: heyy
 ---
-
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
@@ -24,29 +30,50 @@ metadata:
 spec:
   entryPoints:
     - web
+    # - websecure
+  # tls:
+    # secretName: localhost-cert
   routes:
   - match: Path(`/`)
     kind: Rule
+    middlewares:
+    - name: default-sso@kubernetescrd
     services:
     - name: client-app
       port: 80
-
 ---
-
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: chat-route
+  name: static-res-route
   namespace: default
 spec:
   entryPoints:
     - web
+    # - websecure
+  # tls:
+  #   secretName: localhost-cert
   routes:
-  - match: PathPrefix(`/socket.io`, `/meta`)
+  - match: PathPrefix(`/static`)
+    kind: Rule
+    middlewares:
+    - name: default-sso@kubernetescrd
+    services:
+    - name: client-app
+      port: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: user-svc-route
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  #  - websecure
+  routes:
+  - match: Path(`/api`)
     kind: Rule
     services:
-    - name: chat-service
-      port: 3001
-      sticky:
-        cookie:
-          name: heyy
+    - name: user-service
+      port: 3000
